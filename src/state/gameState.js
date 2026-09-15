@@ -20,6 +20,9 @@ export const DEFAULT_STATE = {
         monthlyIncome: 0,
         monthlyExpenses: 0
     },
+    logs: [
+        "Anda lahir ke dunia sebagai anak yang sehat."
+    ],
     backgroundBgId: "default_birth_bg" // Cloudinary Public ID contoh
 };
 
