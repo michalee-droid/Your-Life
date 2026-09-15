@@ -1,6 +1,3 @@
-/**
- * Merender Bottom Navigation Bar
- */
 export function renderBottomNav(activeTab, onTabChange) {
     const navHTML = `
         <nav class="bottom-nav">
@@ -16,10 +13,13 @@ export function renderBottomNav(activeTab, onTabChange) {
                 <span class="nav-icon">💼</span>
                 <span>Pekerjaan</span>
             </button>
+            <button class="nav-item ${activeTab === 'finance' ? 'active' : ''}" data-tab="finance">
+                <span class="nav-icon">💳</span>
+                <span>Keuangan</span>
+            </button>
         </nav>
     `;
 
-    // Pasang Event Listener setelah elemen dimasukkan
     setTimeout(() => {
         document.querySelectorAll('.bottom-nav .nav-item').forEach(btn => {
             btn.addEventListener('click', (e) => {
