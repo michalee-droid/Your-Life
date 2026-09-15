@@ -20,6 +20,21 @@ export const DEFAULT_STATE = {
         monthlyIncome: 0,
         monthlyExpenses: 0
     },
+    // Modul Baru: Pendidikan
+    education: {
+        currentLevel: "Belum Sekolah", // "SD", "SMP", "SMA", "Universitas", dll.
+        schoolName: "Tidak Ada",
+        isEnrolled: false,
+        performance: 50
+    },
+    // Modul Baru: Pekerjaan
+    job: {
+        title: "Pengangguran",
+        company: "Tidak Ada",
+        monthlySalary: 0,
+        hoursPerWeek: 0,
+        fatigue: 0 // Beban kelelahan (0 - 100)
+    },
     logs: [
         "Anda lahir ke dunia sebagai anak yang sehat."
     ],
