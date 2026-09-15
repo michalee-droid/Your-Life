@@ -1,16 +1,21 @@
 import { getGameState, setGameState, resetGameState } from './state/gameState.js';
 import { loadFromLocalStorage, saveToLocalStorage } from './state/storage.js';
 import { getCloudinaryUrl } from './config/cloudinary.js';
+
 import { renderDashboardView } from './views/dashboardView.js';
+import { renderEducationView } from './views/educationView.js';
+import { renderJobView } from './views/jobView.js';
+
+import { renderBottomNav } from './components/navigation.js';
 import { initModal } from './components/modal.js';
+
+let currentTab = 'dashboard'; // Default Tab Active
 
 function initGame() {
     console.log("Memulai FYF Game Engine...");
 
-    // 1. Inisialisasi Wadah Modal ke DOM
     initModal();
 
-    // 2. Muat State
     let state = loadFromLocalStorage();
 
     if (!state) {
@@ -32,9 +37,21 @@ function renderLoop(state) {
         }
     }
 
-    renderDashboardView(state, (newState) => {
-        renderLoop(newState);
-    });
+    // Router Sederhana Berdasarkan Active Tab
+    if (currentTab === 'dashboard') {
+        renderDashboardView(state, (newState) => renderLoop(newState));
+    } else if (currentTab === 'education') {
+        renderEducationView(state, (newState) => renderLoop(newState));
+    } else if (currentTab === 'job') {
+        renderJobView(state, (newState) => renderLoop(newState));
+    }
+
+    // Selalu Tempelkan Bottom Navigation Bar di bagian bawah app container
+    const app = document.getElementById('app');
+    app.insertAdjacentHTML('beforeend', renderBottomNav(currentTab, (selectedTab) => {
+        currentTab = selectedTab;
+        renderLoop(getGameState());
+    }));
 }
 
 document.addEventListener('DOMContentLoaded', initGame);
