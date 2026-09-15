@@ -5,11 +5,12 @@ import { getCloudinaryUrl } from './config/cloudinary.js';
 import { renderDashboardView } from './views/dashboardView.js';
 import { renderEducationView } from './views/educationView.js';
 import { renderJobView } from './views/jobView.js';
+import { renderFinanceView } from './views/financeView.js';
 
 import { renderBottomNav } from './components/navigation.js';
 import { initModal } from './components/modal.js';
 
-let currentTab = 'dashboard'; // Default Tab Active
+let currentTab = 'dashboard';
 
 function initGame() {
     console.log("Memulai FYF Game Engine...");
@@ -37,16 +38,16 @@ function renderLoop(state) {
         }
     }
 
-    // Router Sederhana Berdasarkan Active Tab
     if (currentTab === 'dashboard') {
         renderDashboardView(state, (newState) => renderLoop(newState));
     } else if (currentTab === 'education') {
         renderEducationView(state, (newState) => renderLoop(newState));
     } else if (currentTab === 'job') {
         renderJobView(state, (newState) => renderLoop(newState));
+    } else if (currentTab === 'finance') {
+        renderFinanceView(state, (newState) => renderLoop(newState));
     }
 
-    // Selalu Tempelkan Bottom Navigation Bar di bagian bawah app container
     const app = document.getElementById('app');
     app.insertAdjacentHTML('beforeend', renderBottomNav(currentTab, (selectedTab) => {
         currentTab = selectedTab;
