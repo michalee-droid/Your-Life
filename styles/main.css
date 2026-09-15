@@ -1,0 +1,64 @@
+/* Reset CSS Dasar */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #0f172a; /* Dark theme default */
+    color: #f8fafc;
+    overflow: hidden;
+}
+
+#game-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Layer Latar Belakang dari Cloudinary */
+#bg-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    transition: background-image 0.5s ease-in-out;
+    z-index: 1;
+    filter: brightness(0.4); /* Menggelapkan gambar agar teks UI tetap terbaca jelas */
+}
+
+/* Container Tampilan Game */
+#app {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 480px; /* Ukuran tampilan ala BitLife (Mobile-first UI) */
+    height: 100%;
+    max-height: 900px;
+    background: rgba(30, 41, 59, 0.85);
+    backdrop-filter: blur(12px);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+}
+
+.loading-text {
+    text-align: center;
+    margin-top: auto;
+    margin-bottom: auto;
+    font-size: 1.1rem;
+    color: #94a3b8;
+}
