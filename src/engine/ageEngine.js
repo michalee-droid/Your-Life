@@ -50,18 +50,39 @@ export function processAgeUp() {
     // 1. Tambah Usia
     state.profile.age += 1;
 
-    // 2. Fluktuasi Status Dasar
-    state.stats.health = clamp(state.stats.health + (Math.floor(Math.random() * 3) - 1));
-    state.stats.happiness = clamp(state.stats.happiness + (Math.floor(Math.random() * 3) - 1));
+    // 2. Hitung Pendapatan & Pengeluaran Tahunan
+    const annualIncome = (state.finances.monthlyIncome || 0) * 12;
+    const annualExpenses = (state.finances.monthlyExpenses || 0) * 12;
+    const netCashflow = annualIncome - annualExpenses;
 
-    // 3. Catat Log Dasar Tahun Baru
-    state.logs.unshift(`Umur ${state.profile.age} tahun: Menjalani kehidupan setahun lagi.`);
+    state.finances.cash += netCashflow;
+
+    // 3. Efek Kelelahan Pekerjaan terhadap Kesehatan & Kebahagiaan
+    const jobFatigue = state.job ? state.job.fatigue : 0;
+    let healthImpact = Math.floor(Math.random() * 3) - 1;
+    let happinessImpact = Math.floor(Math.random() * 3) - 1;
+
+    if (jobFatigue > 50) {
+        healthImpact -= 3;
+        happinessImpact -= 4;
+    }
+
+    state.stats.health = clamp(state.stats.health + healthImpact);
+    state.stats.happiness = clamp(state.stats.happiness + happinessImpact);
+
+    // 4. Catat Log Tahun Baru & Finansial
+    let ageLog = `Umur ${state.profile.age} tahun: Menjalani kehidupan.`;
+    if (annualIncome > 0) {
+        ageLog += ` Pendapatan bersih tahunan: Rp ${netCashflow.toLocaleString('id-ID')}.`;
+    }
+    state.logs.unshift(ageLog);
+
     if (state.logs.length > 30) state.logs.pop();
 
     setGameState(state);
     saveToLocalStorage(state);
 
-    // 4. Periksa apakah ada Event Acak yang terpicu
+    // 5. Cek Trigger Event Acak
     const triggeredEvent = checkAndTriggerEvent(state);
 
     return { state, triggeredEvent };
