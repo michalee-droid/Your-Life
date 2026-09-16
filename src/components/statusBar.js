@@ -1,53 +1,26 @@
-/**
- * Komponen penyedia HTML untuk indikator status karakter
- */
-export function renderStatusBar(stats) {
-    return `
-        <div class="status-container">
-            <!-- Health -->
-            <div class="stat-row">
-                <span class="stat-label">❤️ Kesehatan</span>
-                <div class="stat-bar-outer">
-                    <div class="stat-bar-inner bg-health" style="width: ${stats.health}%;"></div>
-                </div>
-                <span class="stat-value">${stats.health}%</span>
-            </div>
+import { calculateFSS } from '../engine/fssEngine.js';
 
-            <!-- Happiness -->
-            <div class="stat-row">
-                <span class="stat-label">😄 Kebahagiaan</span>
-                <div class="stat-bar-outer">
-                    <div class="stat-bar-inner bg-happiness" style="width: ${stats.happiness}%;"></div>
-                </div>
-                <span class="stat-value">${stats.happiness}%</span>
-            </div>
+export function renderStatusBar(gameState) {
+  const { stats, finances } = gameState;
+  const fssData = calculateFSS(finances);
 
-            <!-- IQ -->
-            <div class="stat-row">
-                <span class="stat-label">🧠 Kecerdasan</span>
-                <div class="stat-bar-outer">
-                    <div class="stat-bar-inner bg-iq" style="width: ${stats.iq}%;"></div>
-                </div>
-                <span class="stat-value">${stats.iq}</span>
-            </div>
-
-            <!-- Physical -->
-            <div class="stat-row">
-                <span class="stat-label">💪 Fisik</span>
-                <div class="stat-bar-outer">
-                    <div class="stat-bar-inner bg-physical" style="width: ${stats.physical}%;"></div>
-                </div>
-                <span class="stat-value">${stats.physical}</span>
-            </div>
-
-            <!-- FSS (Financial Stability Score) -->
-            <div class="stat-row">
-                <span class="stat-label">🛡️ FSS Meter</span>
-                <div class="stat-bar-outer">
-                    <div class="stat-bar-inner bg-fss" style="width: ${stats.fss}%;"></div>
-                </div>
-                <span class="stat-value">${stats.fss}</span>
-            </div>
-        </div>
-    `;
+  return `
+    <div class="status-bar-container" style="display: flex; gap: 1rem; padding: 1rem; background: rgba(0,0,0,0.8); color: white; border-bottom: 2px solid #333;">
+      <div class="stat-item">
+        <span>❤️ Health: <strong>${stats.health}%</strong></span>
+      </div>
+      <div class="stat-item">
+        <span>⚡ Fatigue: <strong>${stats.fatigue}%</strong></span>
+      </div>
+      <div class="stat-item">
+        <span>🧠 Mental Clarity: <strong>${stats.mental_clarity}%</strong></span>
+      </div>
+      <div class="stat-item">
+        <span>🔥 Willpower: <strong>${stats.willpower}%</strong></span>
+      </div>
+      <div class="stat-item" style="margin-left: auto;">
+        <span>📊 FSS: <strong style="color: ${fssData.tierInfo.color}">${fssData.fssValue}% (${fssData.tierInfo.tier})</strong></span>
+      </div>
+    </div>
+  `;
 }
