@@ -13,6 +13,10 @@ export function renderBottomNav(activeTab, onTabChange) {
                 <span class="nav-icon">💼</span>
                 <span>Pekerjaan</span>
             </button>
+            <button class="nav-item ${activeTab === 'asset' ? 'active' : ''}" data-tab="asset">
+                <span class="nav-icon">🏛️</span>
+                <span>Aset</span>
+            </button>
             <button class="nav-item ${activeTab === 'finance' ? 'active' : ''}" data-tab="finance">
                 <span class="nav-icon">💳</span>
                 <span>Keuangan</span>
