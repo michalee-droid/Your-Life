@@ -29,3 +29,8 @@ export function clearState() {
     console.error("Gagal menghapus state dari LocalStorage:", error);
   }
 }
+
+// --- Aliases Kompatibilitas Nama Lama ---
+export const saveToLocalStorage = saveState;
+export const loadFromLocalStorage = loadState;
+export const getFromLocalStorage = loadState;
