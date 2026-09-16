@@ -17,10 +17,8 @@ export function applyEventChoiceEffect(choice) {
     if (effect.happiness) state.stats.happiness = clamp(state.stats.happiness + effect.happiness);
     if (effect.iq) state.stats.iq = clamp(state.stats.iq + effect.iq);
     if (effect.physical) state.stats.physical = clamp(state.stats.physical + effect.physical);
-
     if (effect.cash) state.finances.cash += effect.cash;
 
-    // Recalculate FSS after state updates
     state.stats.fss = calculateFSS(state.finances);
 
     if (effect.log) {
@@ -40,46 +38,70 @@ export function processAgeUp() {
 
     // 1. Tambah Usia
     state.profile.age += 1;
+    const age = state.profile.age;
 
-    // 2. Hitung Bunga Utang Tahunan
+    // 2. SISTEM MORTALITAS (Kematian Karakter)
+    if (state.stats.health <= 0) {
+        state.profile.isAlive = false;
+        state.logs.unshift(`Umur ${age}: Anda meninggal dunia karena kondisi kesehatan yang memburuk.`);
+        setGameState(state);
+        saveToLocalStorage(state);
+        return { state, triggeredEvent: null };
+    }
+
+    // Peluang meninggal alami naik berjenjang setelah usia 60 tahun
+    const naturalDeathChance = age > 60 ? (age - 60) * 0.03 : 0;
+    if (Math.random() < naturalDeathChance || age >= 100) {
+        state.profile.isAlive = false;
+        state.logs.unshift(`Umur ${age}: Anda meninggal dunia dengan tenang di usia tua.`);
+        setGameState(state);
+        saveToLocalStorage(state);
+        return { state, triggeredEvent: null };
+    }
+
+    // 3. LOGIKA KELULUSAN PENDIDIKAN
+    if (state.education && state.education.isEnrolled) {
+        state.education.yearsCompleted = (state.education.yearsCompleted || 0) + 1;
+        if (state.education.yearsCompleted >= state.education.requiredYears) {
+            state.logs.unshift(`🎉 Selamat! Anda telah LULUS dari ${state.education.schoolName} (${state.education.currentLevel}). (+15 IQ)`);
+            state.stats.iq = clamp(state.stats.iq + 15);
+            state.education.isEnrolled = false;
+        }
+    }
+
+    // 4. TINGKAT KESULITAN: Inflasi Pengeluaran 3% / Tahun
+    if (state.finances.monthlyExpenses > 0) {
+        state.finances.monthlyExpenses = Math.floor(state.finances.monthlyExpenses * 1.03);
+    }
+
+    // 5. Bunga Utang & Cashflow
     if (state.finances.debt > 0) {
         const annualInterest = Math.floor(state.finances.debt * (state.finances.annualInterestRate || 0.10));
         state.finances.debt += annualInterest;
     }
 
-    // 3. Cashflow Net Tahunan
     const annualIncome = (state.finances.monthlyIncome || 0) * 12;
     const annualExpenses = (state.finances.monthlyExpenses || 0) * 12;
     const netCashflow = annualIncome - annualExpenses;
 
     state.finances.cash += netCashflow;
-
-    // 4. Update Skor FSS Terkini
     state.stats.fss = calculateFSS(state.finances);
 
-    // 5. Dampak Kelelahan Kerja & Fluktuasi Kesehatan
-    const jobFatigue = state.job ? state.job.fatigue : 0;
-    let healthImpact = Math.floor(Math.random() * 3) - 1;
-    let happinessImpact = Math.floor(Math.random() * 3) - 1;
-
-    if (jobFatigue > 50) {
-        healthImpact -= 3;
-        happinessImpact -= 4;
-    }
+    // Penurunan HP/Kenyamanan otomatis jika lelah atau miskin
+    let healthImpact = Math.floor(Math.random() * 3) - 2; 
+    if (state.job && state.job.fatigue > 50) healthImpact -= 4;
+    if (state.finances.cash < 0) healthImpact -= 5; // Penalti HP jika memiliki kas negatif
 
     state.stats.health = clamp(state.stats.health + healthImpact);
-    state.stats.happiness = clamp(state.stats.happiness + happinessImpact);
+    state.stats.happiness = clamp(state.stats.happiness + (Math.floor(Math.random() * 3) - 2));
 
-    // 6. Log Catatan Tahunan
-    let ageLog = `Umur ${state.profile.age} tahun: Menjalani kehidupan. Net Cashflow: Rp ${netCashflow.toLocaleString('id-ID')}.`;
-    state.logs.unshift(ageLog);
+    // Log Tahunan
+    state.logs.unshift(`Umur ${age} tahun: Menjalani kehidupan. Net Cashflow: Rp ${netCashflow.toLocaleString('id-ID')}.`);
     if (state.logs.length > 30) state.logs.pop();
 
     setGameState(state);
     saveToLocalStorage(state);
 
-    // 7. Cek Trigger Event
     const triggeredEvent = checkAndTriggerEvent(state);
-
     return { state, triggeredEvent };
 }
