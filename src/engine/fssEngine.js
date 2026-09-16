@@ -1,48 +1,34 @@
 /**
- * Engine Kalkulasi FSS (Financial Stability Score) & Survival Runway
+ * Menghitung Financial Stress Score (FSS) dan menentukan Zona Risiko
+ * Formula: FSS = ((Mandatory Expenses + Debt) / Income * 50) + Strain Multiplier
  */
+export function calculateFSS(finances, strainMultiplier = 0) {
+  const { mandatory_expenses = 0, debt_installment = 0, net_income = 0 } = finances;
 
-/**
- * Menghitung Survival Runway (Berapa bulan kas bisa bertahan tanpa pendapatan)
- */
-export function calculateRunway(cash, monthlyExpenses) {
-    if (monthlyExpenses <= 0) return 999; // Fallback jika tidak ada pengeluaran
-    if (cash <= 0) return 0;
+  // Defensive Guard: Cegah Division by Zero saat menganggur
+  const safeIncome = net_income > 0 ? net_income : 1;
+  const totalExpenses = mandatory_expenses + debt_installment;
 
-    const months = cash / monthlyExpenses;
-    return parseFloat(months.toFixed(1));
+  // Base Calculation
+  let rawFSS = ((totalExpenses / safeIncome) * 50) + strainMultiplier;
+
+  // Clamping 0 - 100%
+  const finalFSS = Math.min(Math.max(rawFSS, 0), 100);
+
+  return {
+    fssValue: parseFloat(finalFSS.toFixed(1)),
+    tierInfo: getFSSTier(finalFSS)
+  };
 }
 
-/**
- * Menghitung FSS Score (0 - 100) berdasarkan Rasio Cashflow, Utang, dan Runway
- */
-export function calculateFSS(finances) {
-    const { cash, monthlyIncome, monthlyExpenses, debt } = finances;
-
-    let score = 50; // Base score
-
-    // 1. Evaluasi Survival Runway
-    const runwayMonths = calculateRunway(cash, monthlyExpenses);
-    if (runwayMonths >= 12) score += 25; // Aman minimal 1 tahun
-    else if (runwayMonths >= 6) score += 15;
-    else if (runwayMonths >= 3) score += 5;
-    else score -= 20; // Krisis runway
-
-    // 2. Evaluasi Net Cashflow
-    const netCashflow = monthlyIncome - monthlyExpenses;
-    if (netCashflow > 0) score += 15;
-    else if (netCashflow < 0) score -= 15;
-
-    // 3. Penalti Utang
-    if (debt > 0) {
-        const debtRatio = debt / (cash + 1); // Tambah 1 untuk cegah div by zero
-        if (debtRatio > 2) score -= 25;
-        else if (debtRatio > 1) score -= 15;
-        else score -= 5;
-    } else {
-        score += 10; // Bebas utang
-    }
-
-    // Clamp skor antara 0 - 100
-    return Math.max(0, Math.min(100, Math.round(score)));
+function getFSSTier(fss) {
+  if (fss <= 20) {
+    return { tier: "Zona Aman", status: "Fresh Mind", errorRiskBonus: 0, color: "#22c55e" };
+  } else if (fss <= 50) {
+    return { tier: "Zona Waspada", status: "Stable", errorRiskBonus: 0, color: "#eab308" };
+  } else if (fss <= 80) {
+    return { tier: "Zona Krisis", status: "Clouded", errorRiskBonus: 0.20, color: "#f97316" };
+  } else {
+    return { tier: "Zona Bahaya", status: "Soul Fracture", errorRiskBonus: 0.50, color: "#ef4444" };
+  }
 }
