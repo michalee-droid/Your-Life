@@ -1,0 +1,21 @@
+{
+  "player_id": "player_01",
+  "stats": {
+    "health": 100,
+    "fatigue": 0,
+    "willpower": 100,
+    "mental_clarity": 100
+  },
+  "finances": {
+    "cash": 1500000,
+    "monthly_mandatory_expenses": 800000,
+    "monthly_debt_installment": 0,
+    "monthly_net_income": 2000000,
+    "fss": 20.0
+  },
+  "career": {
+    "job_id": "job_informal_01",
+    "job_strain_multiplier": 5,
+    "performance": 50
+  }
+}
