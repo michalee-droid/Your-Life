@@ -1,10 +1,10 @@
 import { renderStatusBar } from '../components/statusBar.js';
 import { renderWarningModal } from '../components/modal.js';
 import { processMonthlyCycle } from '../engine/monthlyEngine.js';
-import { triggerButtonEvent, applyChoiceImpact } from '../engine/eventEngine.js';
+import { triggerButtonEvent } from '../engine/eventEngine.js';
 import { saveState } from '../state/storage.js';
 
-export function renderDashboardView(gameState, eventsList, onStateUpdate) {
+export function renderDashboardView(gameState, eventsList = [], onStateUpdate = null) {
   const app = document.getElementById('app');
   
   app.innerHTML = `
@@ -21,17 +21,27 @@ export function renderDashboardView(gameState, eventsList, onStateUpdate) {
     </div>
   `;
 
-  // Listener: Aksi Lembur (dengan penanganan mitigasi jika Mental Clarity rendah)
+  // Helper fungsi update aman
+  const handleStateChange = (newState) => {
+    saveState(newState);
+    if (typeof onStateUpdate === 'function') {
+      onStateUpdate(newState);
+    } else {
+      // Re-render tampilan lokal jika callback tidak dikirim
+      renderDashboardView(newState, eventsList, onStateUpdate);
+    }
+  };
+
+  // Listener: Aksi Lembur
   document.getElementById('btn-overtime').onclick = () => {
     const executeAction = () => {
-      const triggeredEvent = triggerButtonEvent('btn_work_overtime', eventsList, gameState);
+      const triggeredEvent = triggerButtonEvent('btn_work_overtime', eventsList || [], gameState);
       if (triggeredEvent) {
         alert(`Event Terpicu: ${triggeredEvent.title}\n${triggeredEvent.description}`);
       } else {
         gameState.finances.cash += 250000;
         gameState.stats.fatigue = Math.min(gameState.stats.fatigue + 15, 100);
-        saveState(gameState);
-        onStateUpdate(gameState);
+        handleStateChange(gameState);
       }
     };
 
@@ -50,15 +60,13 @@ export function renderDashboardView(gameState, eventsList, onStateUpdate) {
   document.getElementById('btn-rest').onclick = () => {
     gameState.stats.fatigue = Math.max(gameState.stats.fatigue - 20, 0);
     gameState.stats.mental_clarity = Math.min(gameState.stats.mental_clarity + 15, 100);
-    saveState(gameState);
-    onStateUpdate(gameState);
+    handleStateChange(gameState);
   };
 
   // Listener: Siklus Bulanan
   document.getElementById('btn-next-month').onclick = () => {
     const { updatedState, report } = processMonthlyCycle(gameState);
     alert(report.warningMsg);
-    saveState(updatedState);
-    onStateUpdate(updatedState);
+    handleStateChange(updatedState);
   };
 }
