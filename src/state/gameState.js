@@ -1,10 +1,16 @@
 export const DEFAULT_STATE = {
     version: "1.0.0",
+    hasCreatedCharacter: false, // Flag status registrasi awal
     profile: {
-        name: "Budi Santoso",
-        gender: "Pria",
+        name: "",
+        gender: "", // "Pria" / "Wanita"
         age: 0,
-        archetype: "Pekerja Keras",
+        archetype: "Belum Terdefinisi",
+        isAlive: true
+    },
+    parents: {
+        fatherName: "Ayah",
+        motherName: "Ibu",
         isAlive: true
     },
     stats: {
@@ -17,7 +23,7 @@ export const DEFAULT_STATE = {
     finances: {
         cash: 0,
         monthlyIncome: 0,
-        monthlyExpenses: 500000,
+        monthlyExpenses: 0, // 0 jika ditanggung orang tua (< 15 tahun)
         lifestyleTier: "Minimalis",
         debt: 0,
         annualInterestRate: 0.10
@@ -37,12 +43,14 @@ export const DEFAULT_STATE = {
         hoursPerWeek: 0,
         fatigue: 0
     },
-    // Modul Baru: Properti & Bisnis
-    properties: [], // Contoh isi: { id, name, buyPrice, currentValue, rentalIncome, maintenanceCost }
-    businesses: [], // Contoh isi: { id, name, type, capital, monthlyRevenue, monthlyExpenses, riskLevel }
-    logs: [
-        "Anda lahir ke dunia sebagai anak yang sehat."
+    properties: [],
+    businesses: [],
+    // Modul Baru: Relasi & Koneksi
+    relationships: [
+        { id: "father", name: "Ayah", relation: "Orang Tua", affinity: 80, isAlive: true },
+        { id: "mother", name: "Ibu", relation: "Orang Tua", affinity: 85, isAlive: true }
     ],
+    logs: [],
     backgroundBgId: "default_birth_bg"
 };
 
