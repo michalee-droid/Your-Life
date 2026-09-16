@@ -5,6 +5,7 @@ import { getCloudinaryUrl } from './config/cloudinary.js';
 import { renderDashboardView } from './views/dashboardView.js';
 import { renderEducationView } from './views/educationView.js';
 import { renderJobView } from './views/jobView.js';
+import { renderAssetView } from './views/assetView.js';
 import { renderFinanceView } from './views/financeView.js';
 
 import { renderBottomNav } from './components/navigation.js';
@@ -44,6 +45,8 @@ function renderLoop(state) {
         renderEducationView(state, (newState) => renderLoop(newState));
     } else if (currentTab === 'job') {
         renderJobView(state, (newState) => renderLoop(newState));
+    } else if (currentTab === 'asset') {
+        renderAssetView(state, (newState) => renderLoop(newState));
     } else if (currentTab === 'finance') {
         renderFinanceView(state, (newState) => renderLoop(newState));
     }
