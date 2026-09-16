@@ -1,9 +1,9 @@
 /**
- * Menghitung Financial Stress Score (FSS) dan menentukan Zona Risiko
- * Formula: FSS = ((Mandatory Expenses + Debt) / Income * 50) + Strain Multiplier
+ * Engine Kalkulasi FSS (Financial Stress Score) & Financial Runway
  */
+
 export function calculateFSS(finances, strainMultiplier = 0) {
-  const { mandatory_expenses = 0, debt_installment = 0, net_income = 0 } = finances;
+  const { mandatory_expenses = 0, debt_installment = 0, net_income = 0 } = finances || {};
 
   // Defensive Guard: Cegah Division by Zero saat menganggur
   const safeIncome = net_income > 0 ? net_income : 1;
@@ -31,4 +31,20 @@ function getFSSTier(fss) {
   } else {
     return { tier: "Zona Bahaya", status: "Soul Fracture", errorRiskBonus: 0.50, color: "#ef4444" };
   }
+}
+
+/**
+ * Menghitung Runway Keuangan (estimasi berapa bulan kas dapat bertahan)
+ */
+export function calculateRunway(finances) {
+  if (!finances) return 0;
+
+  const cash = finances.cash || 0;
+  const totalExpenses = (finances.mandatory_expenses || 0) + (finances.debt_installment || 0);
+
+  if (totalExpenses <= 0) return 999;
+  if (cash <= 0) return 0;
+
+  const months = cash / totalExpenses;
+  return parseFloat(months.toFixed(1));
 }
