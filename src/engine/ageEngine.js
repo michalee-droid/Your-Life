@@ -13,15 +13,15 @@ export function processAgeUp() {
     state.profile.age += 1;
     const age = state.profile.age;
 
-    // 1. Poin 4: Biaya Hidup Ditanggung Orang Tua Sampai Usia 15-18 Tahun
+    // Biaya hidup ditanggung orang tua hingga usia 15-18 tahun
     const isOrphan = state.parents && !state.parents.isAlive;
     if (age < 15 && !isOrphan) {
-        state.finances.monthlyExpenses = 0; // Bebas biaya hidup
+        state.finances.monthlyExpenses = 0;
     } else if (age === 15 && !isOrphan) {
-        state.finances.monthlyExpenses = 500000; // Mulai mandiri secara bertahap
+        state.finances.monthlyExpenses = 500000;
     }
 
-    // 2. Kematian Alami & Penyakit
+    // Kematian alami / kesehatan kritis
     if (state.stats.health <= 0 || (age > 60 && Math.random() < (age - 60) * 0.03)) {
         state.profile.isAlive = false;
         state.logs.unshift(`Umur ${age}: Anda meninggal dunia.`);
@@ -30,7 +30,7 @@ export function processAgeUp() {
         return { state, triggeredEvent: null };
     }
 
-    // 3. Hitung Cashflow
+    // Hitung arus kas tahunan
     const annualIncome = (state.finances.monthlyIncome || 0) * 12;
     const annualExpenses = (state.finances.monthlyExpenses || 0) * 12;
     const netCashflow = annualIncome - annualExpenses;
@@ -42,4 +42,30 @@ export function processAgeUp() {
     saveToLocalStorage(state);
 
     return { state, triggeredEvent: null };
+}
+
+// Fungsi yang sebelumnya hilang/belum di-export
+export function applyEventChoiceEffect(effect) {
+    const state = getGameState();
+    if (!effect) return state;
+
+    if (effect.stats) {
+        for (const statKey in effect.stats) {
+            if (state.stats[statKey] !== undefined) {
+                state.stats[statKey] = clamp(state.stats[statKey] + effect.stats[statKey]);
+            }
+        }
+    }
+
+    if (effect.finances) {
+        for (const finKey in effect.finances) {
+            if (state.finances[finKey] !== undefined) {
+                state.finances[finKey] += effect.finances[finKey];
+            }
+        }
+    }
+
+    setGameState(state);
+    saveToLocalStorage(state);
+    return state;
 }
