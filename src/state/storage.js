@@ -1,35 +1,31 @@
-import { DEFAULT_STATE } from './gameState.js';
+/**
+ * Storage Utility untuk menyimpan dan membaca status permainan dari LocalStorage
+ */
 
-const SAVE_KEY = 'FYF_GAME_SAVE_DATA';
+const STORAGE_KEY = 'your_life_state';
 
-export function saveToLocalStorage(state) {
-    try {
-        localStorage.setItem(SAVE_KEY, JSON.stringify(state));
-        return true;
-    } catch (error) {
-        console.error("Gagal menyimpan data:", error);
-        return false;
-    }
+export function saveState(state) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (error) {
+    console.error("Gagal menyimpan state ke LocalStorage:", error);
+  }
 }
 
-export function loadFromLocalStorage() {
-    try {
-        const serialized = localStorage.getItem(SAVE_KEY);
-        if (!serialized) return null;
+export function loadState(defaultData = null) {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? JSON.parse(saved) : defaultData;
+  } catch (error) {
+    console.error("Gagal membaca state dari LocalStorage:", error);
+    return defaultData;
+  }
+}
 
-        const data = JSON.parse(serialized);
-
-        // Gabungkan data lama dengan DEFAULT_STATE agar variabel baru tidak undefined
-        return {
-            ...DEFAULT_STATE,
-            ...data,
-            stats: { ...DEFAULT_STATE.stats, ...data.stats },
-            finances: { ...DEFAULT_STATE.finances, ...data.finances },
-            education: { ...DEFAULT_STATE.education, ...data.education },
-            job: { ...DEFAULT_STATE.job, ...data.job }
-        };
-    } catch (error) {
-        console.error("Gagal memuat data:", error);
-        return null;
-    }
+export function clearState() {
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch (error) {
+    console.error("Gagal menghapus state dari LocalStorage:", error);
+  }
 }
