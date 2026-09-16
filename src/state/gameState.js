@@ -17,16 +17,18 @@ export const DEFAULT_STATE = {
     finances: {
         cash: 0,
         monthlyIncome: 0,
-        monthlyExpenses: 500000, // Biaya hidup dasar (Rp 500rb/bulan)
-        lifestyleTier: "Minimalis", // Options: "Hemat", "Minimalis", "Menengah", "Mewah"
+        monthlyExpenses: 500000,
+        lifestyleTier: "Minimalis",
         debt: 0,
-        annualInterestRate: 0.10 // Bunga utang 10% per tahun
+        annualInterestRate: 0.10
     },
     education: {
         currentLevel: "Belum Sekolah",
         schoolName: "Tidak Ada",
         isEnrolled: false,
-        performance: 50
+        performance: 50,
+        yearsCompleted: 0,
+        requiredYears: 0
     },
     job: {
         title: "Pengangguran",
@@ -35,6 +37,9 @@ export const DEFAULT_STATE = {
         hoursPerWeek: 0,
         fatigue: 0
     },
+    // Modul Baru: Properti & Bisnis
+    properties: [], // Contoh isi: { id, name, buyPrice, currentValue, rentalIncome, maintenanceCost }
+    businesses: [], // Contoh isi: { id, name, type, capital, monthlyRevenue, monthlyExpenses, riskLevel }
     logs: [
         "Anda lahir ke dunia sebagai anak yang sehat."
     ],
