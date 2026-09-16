@@ -1,0 +1,31 @@
+{
+  "events": [
+    {
+      "event_id": "EVT_JOB_001",
+      "trigger_button": "btn_work_overtime",
+      "trigger_chance": 0.15,
+      "title": "Mesin Pabrik Rusak",
+      "description": "Mesin utama mendadak mati saat lembur.",
+      "conditions": {
+        "min_fatigue": 30,
+        "max_mental_clarity": 70
+      },
+      "choices": [
+        {
+          "id": "choice_repair",
+          "text": "Perbaiki Sendiri",
+          "req_skill": { "mechanical": 2 },
+          "success_impact": { "money": 500000, "fatigue": 15, "performance": 10 },
+          "fail_impact": { "health": -10, "fatigue": 25, "performance": -15 }
+        },
+        {
+          "id": "choice_report",
+          "text": "Laporkan Supervisor",
+          "req_skill": {},
+          "success_impact": { "money": 0, "fatigue": 5, "performance": 0 },
+          "fail_impact": { "money": 0, "fatigue": 5, "performance": 0 }
+        }
+      ]
+    }
+  ]
+}
